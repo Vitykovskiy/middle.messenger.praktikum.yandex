@@ -1,0 +1,11 @@
+{{#> layouts/appLayout}}
+  <div class="system-message">
+    <div class="system-message__content">
+      <h1>{{title}}</h1>
+      <h2>{{message}}</h2>
+    </div>
+    <div class="system-message__actions">
+      {{#if button-text}} {{>ui/button type="text" label=button-text href="/src/html/chat.html"}}{{/if}}
+    </div>
+  </div>
+{{/ layouts/appLayout}}

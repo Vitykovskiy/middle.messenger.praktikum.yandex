@@ -1,0 +1,20 @@
+<div class="chat-layout">
+    <nav class="chat-layout__sidebar">
+        <div class="sidebar__header">
+            {{#> sidebar-header}}
+                {{> @partial-block}} 
+            {{/ sidebar-header}}
+        </div>
+        <div class="sidebar__body">
+            {{#> sidebar-body}}
+                {{> @partial-block}} 
+            {{/ sidebar-body}}
+        </div>
+    </nav>
+
+    <div class="chat-layout__chat">
+        {{#> chat}}
+            {{> @partial-block}} 
+        {{/ chat}}
+    </div>
+</div>

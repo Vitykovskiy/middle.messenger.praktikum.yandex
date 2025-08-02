@@ -1,0 +1,18 @@
+{{#> layouts/profileLayout}}
+  <form class="profile__body">
+      {{#*inline "avatar"}}
+          {{> components/avatar size="130"}}
+      {{/ inline}}
+      {{#*inline "info"}}
+        {{>ui/input type="text" name="email" label="Почта" value=user.email}}
+        {{>ui/input type="text" name="login" label="Логин" value=user.login}}
+        {{>ui/input type="text" name="first_name" label="Имя" value=user.firstName}}
+        {{>ui/input type="text" name="second_name" label="Фамилия" value=user.secondName}}
+        {{>ui/input type="text" name="display_name" label="Имя в чате" value=user.visibleName}}
+        {{>ui/input type="text" name="phone" label="Телефон" value=user.phone}}
+      {{/ inline}}
+      {{#*inline "actions"}}
+        {{>ui/button type="filled" label="Подтвердить" type="submit" href="/src/html/profile.html"}}  
+      {{/ inline}}
+  </form>
+{{/ layouts/profileLayout}} 

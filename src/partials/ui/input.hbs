@@ -1,0 +1,15 @@
+<div class="ui-input">
+  <label class="ui-input__label" for="{{name}}">{{label}}</label>
+  <input
+    class="ui-input__item"
+    {{#if value}}value="{{value}}"{{/if}}
+    id="{{name}}"
+    name="{{name}}"
+    type="{{type}}"
+    placeholder=""
+  />
+  {{> ui/divider color="primary" style="margin-top: 7px;"}}
+  {{#if error}}
+    <span class="ui-input__error">{{error}}</span>
+  {{/if}}
+</div>

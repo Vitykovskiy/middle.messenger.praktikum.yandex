@@ -1,0 +1,28 @@
+{{#> layouts/profileLayout}}
+  <div class="profile__body">
+      {{#*inline "avatar"}}
+          {{> components/avatar size="130"}}
+          <div class="profile__name">{{user.visibleName}}</div>
+      {{/ inline}}
+      {{#*inline "info"}}
+        {{> components/viewFormItem key="Почта" value=user.email}}
+        {{> ui/divider color="secondary" style="margin:10px 0"}}
+        {{> components/viewFormItem key="Логин" value=user.login}}
+        {{> ui/divider color="secondary" style="margin:10px 0"}}
+        {{> components/viewFormItem key="Имя" value=user.firstName}}
+        {{> ui/divider color="secondary" style="margin:10px 0"}}
+        {{> components/viewFormItem key="Фамилия" value=user.secondName}}
+        {{> ui/divider color="secondary" style="margin:10px 0"}}
+        {{> components/viewFormItem key="Имя в чате" value=user.visibleName}}
+        {{> ui/divider color="secondary" style="margin:10px 0"}}
+        {{> components/viewFormItem key="Телефон" value=user.phone}}
+      {{/ inline}}
+      {{#*inline "actions"}}
+        {{#> components/viewFormItem }}{{> ui/button type="text" color="primary" label="Изменить данные" size="13" href="/src/html/edit-profile.html"}}{{/ components/viewFormItem}}
+        {{> ui/divider color="secondary" type="" style="margin:10px 0"}}
+        {{#> components/viewFormItem }}  {{> ui/button type="text" color="primary" label="Изменить пароль" size="13" href="/src/html/edit-password.html"}}{{/ components/viewFormItem}}
+        {{> ui/divider color="secondary" style="margin:10px 0"}}
+        {{#> components/viewFormItem }} {{> ui/button type="text" color="red" label="Выйти" size="13"  href="/index.html"}}{{/ components/viewFormItem}}
+      {{/ inline}}
+  </div>
+{{/ layouts/profileLayout}} 

@@ -1,0 +1,20 @@
+{{#> layouts/appLayout}}
+    <form class="signin__card">
+        {{#> ui/card title="Регистрация"}} 
+            {{#*inline "content"}}
+                {{>ui/input type="text" name="email" label="Почта"}}
+                {{>ui/input type="text" name="login" label="Логин"}}
+                {{>ui/input type="text" name="first_name" label="Имя"}}
+                {{>ui/input type="text" name="second_name" label="Фамилия" }}
+                {{>ui/input type="text" name="phone" label="Телефон"}}
+                {{>ui/input type="password" name="password" label="Пароль"}}
+                {{>ui/input type="password" name="password-check" label="Пароль (ещё раз)" error="Пароли не совпадают"}}
+            {{/ inline}}
+
+            {{#*inline "actions"}}
+                {{>ui/button type="filled" label="Зарегистрироваться" type="submit" href="/src/html/chat.html"}}
+                {{>ui/button type="text" label="Войти" href="/"}}
+            {{/ inline}}
+        {{/ ui/card}}
+    </form>
+{{/ layouts/appLayout}}
