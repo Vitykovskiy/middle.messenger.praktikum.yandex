@@ -1,0 +1,19 @@
+{{#if text}}
+    <div class="message {{#if isOutgoing}}message_outgoing{{/if}}">
+        <div class="message__text">
+            {{text}}
+            <div class="message__view-info {{#if isOutgoing}}message__view-info_outgoing{{/if}}">{{time}}</div>
+        </div>
+    </div>
+{{/if}}
+
+{{#if imgUrl}}
+    <div class="message {{#if isOutgoing}}message_outgoing{{/if}}">
+        {{#if imgUrl}}
+            <div class="message__image" >
+               <img src="/src/assets/images/otkrytka-privet.jpg" alt="img">
+                <div class="message__view-info message__view-info_background">{{time}}</div>
+            </div>
+        {{/if}}
+    </div>
+{{/if}}

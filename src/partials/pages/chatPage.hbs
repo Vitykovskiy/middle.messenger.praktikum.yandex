@@ -1,0 +1,13 @@
+{{#> layouts/chatLayout}} 
+    {{#*inline "sidebar-header"}}
+        {{> components/userPanel}}
+        {{> components/chatsList/chatsSearch}}
+    {{/ inline}}
+        {{#*inline "sidebar-body"}}
+        {{> components/chatsList/chatsList}}
+    {{/ inline}}
+
+    {{#*inline "chat"}}
+        {{> components/chat/chat messages=messages}}
+    {{/ inline}}
+{{/ layouts/chatLayout}} 

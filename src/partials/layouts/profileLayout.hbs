@@ -1,0 +1,24 @@
+<div class="profile">
+  <a class="profile__return-btn" href="/src/html/chat.html">
+    <div class="profile__return-icon">1</div>
+  </a>
+  {{#> layouts/appLayout}}
+    <div class="profile__body">
+      <div class="profile__avatar">
+        {{#> avatar}}
+            {{> @partial-block}} 
+        {{/avatar}}
+      </div>
+      <div class="profile__info">
+        {{#> info}}
+            {{> @partial-block}} 
+        {{/info}}
+      </div>
+      <div class="profile__actions">
+        {{#> actions}}
+            {{> @partial-block}} 
+        {{/actions}}
+      </div>
+  </div>
+  {{/ layouts/appLayout}} 
+</div>

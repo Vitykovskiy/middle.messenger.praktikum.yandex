@@ -1,0 +1,9 @@
+<div class="view-form">
+  {{#if key}}<div class="view-form__key">{{key}}</div>
+  {{else}}
+    {{#> key-slot}}
+        {{> @partial-block}} 
+    {{/ key-slot}}
+  {{/if}}
+  {{#if value}}<div class="view-form__value">{{value}}</div>{{/if}}
+</div>

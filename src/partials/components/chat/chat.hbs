@@ -1,0 +1,15 @@
+{{#if conversation}} 
+    <div class="chat">
+      {{>components/chat/header interlocutor=conversation.interlocutor}}
+      {{>ui/divider color="secondary" style="margin: 10px"}}
+
+      {{>components/chat/conversation messages=conversation.messages}}
+      {{>ui/divider color="secondary" style="margin: 10px"}}
+      
+      {{>components/chat/footer}}
+    </div>
+{{else}}
+    <main class="empty-message">
+      Выберите чат чтобы отправить сообщение
+    </main>
+{{/if}}

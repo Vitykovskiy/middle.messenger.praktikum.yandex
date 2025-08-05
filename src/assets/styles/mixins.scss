@@ -1,0 +1,25 @@
+@mixin thin-scrollbar(
+  $width: 2px,
+  $track-color: transparent,
+  $thumb-color: #8888889f
+) {
+  scrollbar-width: thin;
+  scrollbar-color: $thumb-color $track-color;
+
+  &::-webkit-scrollbar {
+    width: $width;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $track-color;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $thumb-color;
+    border-radius: calc($width / 2);
+  }
+
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
+}

@@ -1,0 +1,105 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..600&display=swap");
+
+@mixin header-1($color: var(--main-color)) {
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 40px;
+  line-height: 40px;
+  color: $color;
+}
+
+@mixin header-2($color: var(--main-color)) {
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 20px;
+  color: $color;
+}
+
+@mixin header-3($color: var(--main-color)) {
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 20px;
+  color: $color;
+}
+
+@mixin body-1($color: var(--main-color)) {
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 13px;
+  color: $color;
+}
+
+@mixin body-2($color: var(--main-color)) {
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 15px;
+  color: $color;
+}
+
+@mixin body-3($color: var(--main-color)) {
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 12px;
+  color: $color;
+}
+
+@mixin body-4($color: var(--main-color)) {
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 14px;
+  color: $color;
+}
+
+@mixin bold-1($color: var(--main-color)) {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 16px;
+  color: $color;
+}
+
+@mixin bold-2($color: var(--main-color)) {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 13px;
+  color: $color;
+}
+
+@mixin small-1($color: var(--main-color)) {
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 11px;
+  line-height: 11px;
+  color: $color;
+}
+
+@mixin small-2($color: var(--main-color)) {
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 9px;
+  line-height: 9px;
+  color: $color;
+}
+
+@mixin small-3($color: var(--main-color)) {
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 9px;
+  line-height: 13px;
+  color: $color;
+}
+
+@mixin small-4($color: var(--main-color)) {
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 8px;
+  line-height: 8px;
+  color: $color;
+}
