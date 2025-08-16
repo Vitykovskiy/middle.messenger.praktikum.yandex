@@ -10,14 +10,26 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "start": "vite build && vite preview"
+    "start": "vite build && vite preview",
+    "lint": "tsc --noEmit && npx eslint . --fix && npx stylelint \"**/*.scss\" --fix",
+    "format": "npx prettier --write ."
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "uuid": "^11.1.0"
+  },
   "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "@types/node": "^24.3.0",
+    "eslint": "^9.33.0",
+    "eslint-config-prettier": "^10.1.8",
     "sass": "^1.89.2",
+    "stylelint": "^16.23.1",
+    "stylelint-scss": "^6.12.1",
     "typescript": "^5.9.2",
+    "typescript-eslint": "^8.39.1",
     "vite": "^7.0.6",
     "vite-plugin-handlebars": "^2.0.0"
   }

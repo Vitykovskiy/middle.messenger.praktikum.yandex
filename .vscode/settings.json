@@ -1,0 +1,8 @@
+{
+  "editor.formatOnSave": true,
+  "eslint.format.enable": true,
+  "typescript.preferences.importModuleSpecifier": "shortest",
+  "typescript.suggest.paths": true,
+  "javascript.preferences.importModuleSpecifier": "shortest",
+  "javascript.suggest.paths": true
+}
