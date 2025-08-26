@@ -1,29 +1,27 @@
 import { queryStringify } from './helpers';
 import { METHODS, type Options, type OptionsWithoutMethod } from './types';
 
+type HTTPMethod = <R = unknown>(url: string, options?: Options) => Promise<R>;
+
 export class HTTPTransport {
-  get<TResponse>(url: string, options: OptionsWithoutMethod = {}): Promise<TResponse> {
-    return this.requesthWithRetry<TResponse>(
-      url,
-      { ...options, method: METHODS.GET },
-      options.timeout
-    );
-  }
+  get: HTTPMethod = (url: string, options: OptionsWithoutMethod = {}) => {
+    return this.requesthWithRetry(url, { ...options, method: METHODS.GET });
+  };
 
-  post<TResponse>(url: string, options: OptionsWithoutMethod = {}): Promise<TResponse> {
-    return this.requesthWithRetry(url, { ...options, method: METHODS.POST }, options.timeout);
-  }
+  post: HTTPMethod = (url: string, options: OptionsWithoutMethod = {}) => {
+    return this.requesthWithRetry(url, { ...options, method: METHODS.POST });
+  };
 
-  put<TResponse>(url: string, options: OptionsWithoutMethod = {}): Promise<TResponse> {
-    return this.requesthWithRetry(url, { ...options, method: METHODS.PUT }, options.timeout);
-  }
+  put: HTTPMethod = (url: string, options: OptionsWithoutMethod = {}) => {
+    return this.requesthWithRetry(url, { ...options, method: METHODS.PUT });
+  };
 
-  delete<TResponse>(url: string, options: OptionsWithoutMethod = {}): Promise<TResponse> {
-    return this.requesthWithRetry(url, { ...options, method: METHODS.DELETE }, options.timeout);
-  }
+  delete: HTTPMethod = (url: string, options: OptionsWithoutMethod = {}) => {
+    return this.requesthWithRetry(url, { ...options, method: METHODS.DELETE });
+  };
 
-  request<TResponse>(url: string, options: Options = {}, timeout = 5000): Promise<TResponse> {
-    const { headers = {}, method, data } = options;
+  request: HTTPMethod = (url: string, options: Options = {}) => {
+    const { headers = {}, method, data, timeout = 5000 } = options;
 
     return new Promise((resolve, reject) => {
       if (!method) {
@@ -56,13 +54,9 @@ export class HTTPTransport {
         xhr.send(JSON.stringify(data));
       }
     });
-  }
+  };
 
-  requesthWithRetry<TResponse>(
-    url: string,
-    options: Options = {},
-    timeout = 5000
-  ): Promise<TResponse> {
+  requesthWithRetry<TResponse>(url: string, options: Options = {}): Promise<TResponse> {
     const { retries = 1 } = options;
 
     const onError = (error: TResponse): Promise<TResponse> => {
@@ -71,9 +65,9 @@ export class HTTPTransport {
         throw error;
       }
 
-      return this.requesthWithRetry<TResponse>(url, { ...options, retries: retriesLeft, timeout });
+      return this.requesthWithRetry<TResponse>(url, { ...options, retries: retriesLeft });
     };
 
-    return this.request<TResponse>(url, options, timeout).catch(onError);
+    return this.request<TResponse>(url, options).catch(onError);
   }
 }
