@@ -1,8 +1,9 @@
 import { v4 as makeUUID } from 'uuid';
 import EventBus from '@/modules/event-bus';
-import { copy, compareObjects } from '@/utils/helpers';
-import type { IBlockChildren, IBlockMeta, IBlockWrapperProps, IBlockProps } from './types';
+import { cloneDeep, isEqual } from '@/utils/helpers';
 import { Templator } from '@/utils/templator';
+import type { IBlockChildren, IBlockMeta, IBlockProps } from './types';
+import { isBlock, isBlockArray, isHTMLInput } from './helpers';
 
 abstract class Block {
   public props: IBlockProps;
@@ -10,30 +11,25 @@ abstract class Block {
   public id: string | null = null;
   public static EVENTS = {
     INIT: 'init',
-    FLOW_CDM: 'flow:component-did-mount',
-    FLOW_CDU: 'flow:component-did-update',
-    FLOW_RENDER: 'flow:render'
+    FLOW_MOUNT: 'flow:component-did-mount',
+    FLOW_UPDATE: 'flow:component-did-update',
+    FLOW_RENDER: 'flow:render',
+    FLOW_UNMOUNT: 'flow:component-did-unmount'
   };
 
   private _element: HTMLElement | null = null;
   private _meta: IBlockMeta;
   private _eventBus: () => EventBus;
 
-  constructor(
-    tagName: keyof HTMLElementTagNameMap = 'div',
-    propsAndChildren: IBlockProps = {},
-    options: IBlockWrapperProps = {}
-  ) {
-    const eventBus = new EventBus();
-    const { children, props } = this._getChildren(propsAndChildren);
+  constructor(props: IBlockProps = {}) {
+    const { tagName = 'div' } = props;
 
-    this._meta = {
-      tagName,
-      props,
-      options
-    };
+    const eventBus = new EventBus();
     this.props = this._makePropsProxy(props);
-    this.children = children;
+    this._meta = {
+      tagName
+    };
+    this.children = this._getChildren(props);
     this._eventBus = () => eventBus;
 
     this._generateId();
@@ -43,9 +39,13 @@ abstract class Block {
 
   get element(): HTMLElement {
     if (!this._element) {
-      throw new Error('Элемент отсутствует');
+      throw new Error('Element not found');
     }
     return this._element;
+  }
+
+  get eventBus(): EventBus {
+    return this._eventBus();
   }
 
   public init(): void {
@@ -53,9 +53,9 @@ abstract class Block {
     this._eventBus().emit(Block.EVENTS.FLOW_RENDER);
   }
 
-  public componentDidMount(_oldProps?: IBlockProps): void {}
+  public onMount(): void {}
 
-  public componentDidUpdate(_oldProps: IBlockProps, _newProps: IBlockProps): boolean {
+  public onUpdate(_oldProps: IBlockProps, _newProps: IBlockProps): boolean {
     return true;
   }
 
@@ -63,6 +63,7 @@ abstract class Block {
 
   public compile(template: string, props: IBlockProps): DocumentFragment {
     const propsAndStubs = { ...props };
+    this.children = this._getChildren(props);
 
     Object.entries(this.children).forEach(([key, value]) => {
       if (Array.isArray(value)) {
@@ -97,7 +98,11 @@ abstract class Block {
   }
 
   public dispatchComponentDidMount(): void {
-    this._eventBus().emit(Block.EVENTS.FLOW_CDM);
+    this._eventBus().emit(Block.EVENTS.FLOW_MOUNT);
+  }
+
+  public dispatchComponentDidUnmount(): void {
+    this._eventBus().emit(Block.EVENTS.FLOW_UNMOUNT);
   }
 
   public setProps(nextProps: IBlockProps): void {
@@ -113,38 +118,32 @@ abstract class Block {
   }
 
   public show(): void {
-    this.getContent().style.display = 'block';
+    this.getContent().style.display = '';
   }
 
   public hide(): void {
     this.getContent().style.display = 'none';
   }
 
-  private _getChildren(propsAndChildren: IBlockProps): {
-    props: IBlockProps;
-    children: IBlockChildren;
-  } {
+  public onUnmount(): void {}
+
+  private _getChildren(props: IBlockProps): IBlockChildren {
     const children: IBlockChildren = {};
-    const props: IBlockProps = {};
 
-    Object.entries(propsAndChildren).forEach(([key, value]) => {
-      const isChild = value instanceof Block;
-      const isChildren = Array.isArray(value) && value.length && value[0] instanceof Block;
-
-      if (isChild || isChildren) {
+    Object.entries(props).forEach(([key, value]) => {
+      if (isBlock(value) || isBlockArray(value)) {
         children[key] = value;
-      } else {
-        props[key] = value;
       }
     });
-    return { props, children };
+    return children;
   }
 
   private _registerEvents(eventBus: EventBus): void {
     eventBus.on(Block.EVENTS.INIT, this.init.bind(this));
-    eventBus.on(Block.EVENTS.FLOW_CDM, this._componentDidMount.bind(this));
-    eventBus.on(Block.EVENTS.FLOW_CDU, this._componentDidUpdate.bind(this));
+    eventBus.on(Block.EVENTS.FLOW_MOUNT, this._componentDidMount.bind(this));
+    eventBus.on(Block.EVENTS.FLOW_UPDATE, this._componentDidUpdate.bind(this));
     eventBus.on(Block.EVENTS.FLOW_RENDER, this._render.bind(this));
+    eventBus.on(Block.EVENTS.FLOW_UNMOUNT, this._componentDidUnmount.bind(this));
   }
 
   private _addEvents(): void {
@@ -169,7 +168,7 @@ abstract class Block {
   }
 
   private _componentDidMount(): void {
-    this.componentDidMount();
+    this.onMount();
 
     Object.values(this.children).forEach((child) => {
       if (Array.isArray(child)) {
@@ -181,10 +180,9 @@ abstract class Block {
   }
 
   private _componentDidUpdate(oldProps: IBlockProps, newProps: IBlockProps): void {
-    // В случае отсутствия изменений в свойствах перерендера не будет
-    if (!compareObjects(oldProps, newProps)) {
+    if (!isEqual(oldProps, newProps)) {
       this._render();
-      this.componentDidUpdate(oldProps, newProps);
+      this.onUpdate(oldProps, newProps);
     }
   }
 
@@ -203,11 +201,29 @@ abstract class Block {
       this.element.setAttribute('data-block-id', this.id);
     }
 
-    Object.entries(this._meta.options).forEach(([key, value]) => {
+    this._applyWrapperProperties();
+  }
+
+  private _componentDidUnmount(): void {
+    this.onUnmount();
+
+    this.element.remove();
+  }
+
+  private _applyWrapperProperties(): void {
+    if (!this.props.wrapperProps) {
+      return;
+    }
+
+    this.element.className = ''; // Очищаем предыдущие классы перед добавлением новых
+
+    Object.entries(this.props.wrapperProps).forEach(([key, value]) => {
       if (key === 'classes') {
         this.element.classList.add(...(value as string[]));
       } else if (key === 'styles') {
         this.element.style = (value as string[]).join(';');
+      } else if (key === 'value' && isHTMLInput(this.element)) {
+        this.element.value = (value as string) ?? '';
       } else {
         this.element.setAttribute(key, String(value ?? ''));
       }
@@ -215,7 +231,6 @@ abstract class Block {
   }
 
   private _makePropsProxy(props: IBlockProps): IBlockProps {
-    // Ещё один способ передачи this, но он больше не применяется с приходом ES6+
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
 
@@ -225,13 +240,13 @@ abstract class Block {
         return typeof value === 'function' ? value.bind(target) : value;
       },
       set(target: IBlockProps, property: string, newValue: IBlockProps[keyof IBlockProps]) {
-        const originalTarget = copy<IBlockProps>(target);
+        const originalTarget = cloneDeep<IBlockProps>(target);
         target[property] = newValue;
-        self._eventBus().emit(Block.EVENTS.FLOW_CDU, originalTarget, target);
+        self._eventBus().emit(Block.EVENTS.FLOW_UPDATE, originalTarget, target);
         return true;
       },
       deleteProperty() {
-        throw new Error('Нет доступа');
+        throw new Error('DeleteProperty: Access denied');
       }
     });
 

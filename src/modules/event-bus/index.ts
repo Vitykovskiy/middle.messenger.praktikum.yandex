@@ -16,7 +16,7 @@ export default class EventBus {
 
   off(event: string, callback: Function): void {
     if (!this.listners[event]) {
-      throw new Error(`Нет события: ${event}`);
+      throw new Error(`Event not found: ${event}`);
     }
 
     this.listners[event] = this.listners[event].filter((listener) => listener !== callback);
@@ -24,7 +24,7 @@ export default class EventBus {
 
   emit<T>(event: string, ...args: T[]): void {
     if (!this.listners[event]) {
-      throw new Error(`Нет события: ${event}`);
+      return;
     }
 
     this.listners[event].forEach((listner) => listner(...args));

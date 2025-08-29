@@ -1,26 +1,25 @@
 import Block from '@/modules/block';
 import { template } from './template';
 import type { IDividerProps } from './types';
-import type { IBlockWrapperProps } from '@/modules/block/types';
+import { resolveConditionalProps } from '@/modules/block/helpers';
+import { merge } from '@/utils/helpers';
 
 export default class Divider extends Block {
-  constructor(props: IDividerProps = {}, wrapperProps: IBlockWrapperProps = {}) {
-    const classes = ['ui-divider', ...(wrapperProps.classes ?? [])];
-    const styles = [...(wrapperProps.styles ?? [])];
-
-    if (props.color) {
-      classes.push(`ui-divider_${props.color}`);
-    }
-
-    if (props.size) {
-      styles.push(`border-width:${props.size}px`);
-    }
-
-    super('div', props, {
-      ...wrapperProps,
-      classes,
-      styles
-    });
+  constructor(props: IDividerProps = {}) {
+    super(
+      merge(
+        {
+          wrapperProps: {
+            classes: resolveConditionalProps([
+              ['ui-divider'],
+              [`ui-divider_${props.color}`, !!props.color]
+            ]),
+            styles: resolveConditionalProps([[`border-width:${props.size}px`, !!props.size]])
+          }
+        },
+        props
+      )
+    );
   }
 
   public render(): DocumentFragment {

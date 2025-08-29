@@ -56,6 +56,14 @@
   color: $color;
 }
 
+@mixin body-5($color: var(--main-color)) {
+  font-family: Inter, sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  color: $color;
+}
+
 @mixin bold-1($color: var(--main-color)) {
   font-family: Inter, sans-serif;
   font-weight: 600;

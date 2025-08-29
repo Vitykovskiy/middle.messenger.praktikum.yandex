@@ -1,75 +1,61 @@
+import userService from '@/services/user';
 import { Button, Input, Card, Form } from '@/ui';
-import { template } from './template';
-import {
-  emailValidator,
-  firstNameValidator,
-  loginValidator,
-  passwordValidator,
-  phoneValidator,
-  secondNameValidator
-} from '@/utils/validators';
+import { emptyValidator } from '@/utils/validators';
+import { ElementsNames } from './constants';
+import { router } from '@/modules/router';
+import { RoutesNames } from '@/routes';
 
-export class SignInPage extends Form {
+export class SigninPage extends Form {
   constructor() {
-    const confirmBtn = new Button({ label: 'Зарегистрироваться', type: 'submit' });
-    const loginBtn = new Button({ label: 'Войти', variant: 'text' });
+    const enterBtn = new Button({
+      label: 'Войти',
+      type: 'submit',
+      wrapperProps: { styles: ['width: 100%'] }
+    });
+    const signInBtn = new Button({
+      label: 'Нет аккаунта?',
+      variant: 'text',
+      wrapperProps: { styles: ['margin:4px auto 0'] }
+    });
+    signInBtn.click = () => {
+      router.go({ name: RoutesNames.SignUpPage });
+    };
 
-    const emailInput = new Input({
-      name: 'email',
-      label: 'Почта',
-      validator: emailValidator
-    });
     const loginInput = new Input({
-      name: 'login',
+      name: ElementsNames.Login,
       label: 'Логин',
-      validator: loginValidator
-    });
-    const firstNameInput = new Input({
-      name: 'first_name',
-      label: 'Имя',
-      validator: firstNameValidator
-    });
-    const secondNameInput = new Input({
-      name: 'secondName',
-      label: 'Фамилия',
-      validator: secondNameValidator
-    });
-    const phoneInput = new Input({
-      name: 'phone',
-      label: 'Телефон',
-      validator: phoneValidator
+      type: 'text',
+      validators: [emptyValidator]
     });
     const passwordInput = new Input({
-      name: 'password',
+      name: ElementsNames.Password,
       type: 'password',
       label: 'Пароль',
-      validator: passwordValidator
-    });
-    const passwordCheckInput = new Input({
-      name: 'password-check',
-      type: 'password',
-      label: 'Пароль (ещё раз)',
-      validator: passwordValidator
+      validators: [emptyValidator]
     });
 
     const card = new Card({
-      title: 'Регистрация',
-      contentSlot: [
-        emailInput,
-        loginInput,
-        firstNameInput,
-        secondNameInput,
-        phoneInput,
-        passwordInput,
-        passwordCheckInput
-      ],
-      actions: [confirmBtn, loginBtn]
+      tagName: 'main',
+      header: 'Вход',
+      content: [loginInput, passwordInput],
+      actions: [enterBtn, signInBtn]
     });
 
-    super({ content: card }, { classes: ['signin__card'] });
+    super({
+      content: card,
+      wrapperProps: { classes: ['signin__card'] }
+    });
   }
 
-  render(): DocumentFragment {
-    return this.compile(template, this.props);
+  onSubmit(form: HTMLFormElement): void {
+    const formData = new FormData(form);
+    const login = formData.get(ElementsNames.Login) as string;
+    const password = formData.get(ElementsNames.Password) as string;
+
+    if (!login || !password) {
+      throw new Error('Both form values should be filled');
+    }
+
+    userService.signIn({ login, password });
   }
 }

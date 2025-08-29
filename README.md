@@ -19,10 +19,10 @@
 ## Перечень страниц
 
 - [Логин](https://serene-heliotrope-d9a2a9.netlify.app)
-- [Регистрация](https://serene-heliotrope-d9a2a9.netlify.app/src/html/signin/index.html)
-- [Окно чата](https://serene-heliotrope-d9a2a9.netlify.app/src/html/chat/index.html)
-- [Профиль пользователя](https://serene-heliotrope-d9a2a9.netlify.app/src/html/profile/index.html)
-- [Редактирование профиля](https://serene-heliotrope-d9a2a9.netlify.app/src/html/edit-profile/index.html)
-- [Редактирование пароля](https://serene-heliotrope-d9a2a9.netlify.app/src/html/edit-password/index.html)
-- [Ошибка 500](https://serene-heliotrope-d9a2a9.netlify.app/src/html/500/index.html)
-- [Ошибка 404](https://serene-heliotrope-d9a2a9.netlify.app/src/html/404/index.html)
+- [Регистрация](https://serene-heliotrope-d9a2a9.netlify.app/sign-up)
+- [Окно чата](https://serene-heliotrope-d9a2a9.netlify.app/messenger)
+- [Профиль пользователя](https://serene-heliotrope-d9a2a9.netlify.app/settings)
+- [Редактирование профиля](https://serene-heliotrope-d9a2a9.netlify.app/settings/edit)
+- [Редактирование пароля](https://serene-heliotrope-d9a2a9.netlify.app/settings/password)
+- [Ошибка 500](https://serene-heliotrope-d9a2a9.netlify.app/500)
+- [Ошибка 404](https://serene-heliotrope-d9a2a9.netlify.app/404)

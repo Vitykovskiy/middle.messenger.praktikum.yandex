@@ -1,55 +1,92 @@
 import Block from '@/modules/block';
 import type { IBaseInputProps } from './types';
-import type { IBlockWrapperProps } from '@/modules/block/types';
+import { merge } from '@/utils/helpers';
+import { isHTMLInput } from '@/modules/block/helpers';
 
 // Чистый input без обёртки для проксирования blur через EventBus
 export class BaseInput extends Block {
-  private _validator?: (value: string) => string | null;
+  public static isBaseInput = (value: unknown): value is BaseInput => value instanceof BaseInput;
 
-  constructor(props: IBaseInputProps, wrapperProps: IBlockWrapperProps = {}) {
-    const { name, parentEventBus, events: customEvents = {}, validator, ...rest } = props;
+  private _validators?: ((value: string) => string | null)[];
 
-    const onBlur = (event: Event) => {
-      parentEventBus?.emit('blur', event);
-    };
-
-    const classes = ['ui-input__item', ...(wrapperProps.classes ?? [])];
+  constructor(props: IBaseInputProps) {
+    const { name, parentEventBus, validators, placeholder, type, value, ...rest } = props;
 
     const events = {
-      blur: onBlur,
-      ...customEvents
+      blur: (event: Event) => {
+        parentEventBus?.emit('blur', event);
+      },
+      change: (event: Event) => {
+        if (!isHTMLInput(event.target)) {
+          return;
+        }
+
+        if (type === 'file') {
+          this.onChangeFiles(event.target.files);
+        } else {
+          this.onChange(event.target.value);
+        }
+      },
+      input: (event: Event) => {
+        if (!isHTMLInput(event.target)) {
+          return;
+        }
+
+        this.onInput(event.target.value);
+      }
     };
 
     super(
-      'input',
-      { events },
-      {
-        id: name,
-        name,
-        classes,
-        ...rest
-      }
+      merge(
+        {
+          tagName: 'input',
+          events,
+          wrapperProps: { id: name, name, placeholder, type, value, classes: ['ui-input__item'] }
+        },
+        rest
+      )
     );
 
-    this._validator = validator;
+    this._validators = validators;
   }
 
-  public render(): DocumentFragment {
-    return this.compile('', this.props);
+  public get value() {
+    return (this.getContent() as HTMLInputElement).value;
+  }
+
+  public clear() {
+    (this.getContent() as HTMLInputElement).value = '';
   }
 
   public validate(): boolean {
-    if (!this._validator) {
+    if (!this._validators) {
       return true;
     }
 
-    if (!(this.element instanceof HTMLInputElement)) {
+    if (!isHTMLInput(this.element)) {
       throw new Error(`Поле ввода ${this.props.name} не найдено`);
     }
 
     const value = this.element.value;
-    const error = this._validator(value);
 
-    return !error;
+    for (const validator of this._validators) {
+      const error = validator(value);
+      if (error) {
+        this.setProps({ error });
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  public onChangeFiles(_files: FileList | null): void {}
+
+  public onChange(_value: string | null): void {}
+
+  public onInput(_value: string | null): void {}
+
+  public render(): DocumentFragment {
+    return this.compile('', this.props);
   }
 }

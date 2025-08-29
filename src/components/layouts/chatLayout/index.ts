@@ -1,10 +1,11 @@
 import Block from '@/modules/block';
 import type { IChatLayoutProps } from './types';
 import { template } from './template';
+import { merge } from '@/utils/helpers';
 
 export default class ChatLayout extends Block {
   constructor(props: IChatLayoutProps) {
-    super('div', props, { classes: ['chat-layout'] });
+    super(merge({ wrapperProps: { classes: [['chat-layout']] } }, props));
   }
 
   public render(): DocumentFragment {

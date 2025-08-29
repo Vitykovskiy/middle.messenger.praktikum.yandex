@@ -22,8 +22,8 @@ export function phoneValidator(value: string): string | null {
   return validateField('phone', value);
 }
 
-export function messageValidator(value: string): string | null {
-  return validateField('message', value);
+export function emptyValidator(value: string): string | null {
+  return validateField('empty', value);
 }
 
 function validateField(field: keyof typeof RULES, value: string): string | null {
@@ -50,7 +50,7 @@ const RULES = {
   // Телефон: 10–15 цифр, допускается ведущий +
   phone: /^\+?\d{10,15}$/,
   // Сообщение: непустая строка (хотя бы один не-пробельный символ)
-  message: /\S+/
+  empty: /\S+/
 };
 
 const ERROR_MESSAGES = {
@@ -60,5 +60,5 @@ const ERROR_MESSAGES = {
   email: 'Некорректный email.',
   password: 'Пароль 8–40 символов, с заглавной буквой и цифрой.',
   phone: 'Телефон 10–15 цифр, может начинаться с "+".',
-  message: 'Поле не должно быть пустым.'
+  empty: 'Поле не должно быть пустым.'
 };

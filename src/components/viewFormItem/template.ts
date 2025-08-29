@@ -1,7 +1,4 @@
 export const template = `
-  {{#if label}}<div class="view-form__key">{{label}}</div>
-  {{else}}
-    {{labelSlot}}
-  {{/if}}
-  {{#if value}}<div class="view-form__value">{{value}}</div>{{/if}}
+<div class="view-form__key">{{{label}}}</div>
+<div class="view-form__value">{{{value}}}</div>
 `;

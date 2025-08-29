@@ -3,3 +3,7 @@ export { default as Input } from './input';
 export { default as Divider } from './divider';
 export { default as Card } from './card';
 export { default as Form } from './form';
+export { default as DropdownMenu } from './dropdownMenu';
+export { default as Icon } from './icon';
+export { default as Modal } from './modal';
+export { default as UIText } from './text';

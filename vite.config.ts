@@ -11,16 +11,7 @@ export default defineConfig({
   root: __dirname,
   build: {
     rollupOptions: {
-      input: {
-        login: 'index.html',
-        signin: 'src/html/signin/index.html',
-        chat: 'src/html/chat/index.html',
-        profile: 'src/html/profile/index.html',
-        editProfile: 'src/html/edit-profile/index.html',
-        editPassword: 'src/html/edit-password/index.html',
-        notFound: 'src/html/404/index.html',
-        appError: 'src/html/500/index.html'
-      }
+      input: 'index.html'
     }
   },
   css: {

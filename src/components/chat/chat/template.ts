@@ -1,9 +1,9 @@
 export const template = `
-{{#if dialog}} 
+{{#if showDialog}} 
       {{{header}}}
       {{{dialog}}}
       {{{footer}}}
 {{else}}
-      Выберите чат чтобы отправить сообщение
+      {{{emptyMessage}}}
 {{/if}}
 `;
