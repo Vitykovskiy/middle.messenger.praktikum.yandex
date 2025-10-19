@@ -6,6 +6,8 @@
 - `npm run dev` — запуск проекта в режиме разработки
 - `npm run build` — сборка проекта
 - `npm run start` — сборка и запуск проекта
+- `npm run lint` — проверка TypeScript, ESLint и Stylelint + автофикс
+- `npm run format` — автоформатирование всего кода через Prettier
 
 После запуска проект будет доступен на порту 3000.
 
@@ -17,10 +19,10 @@
 ## Перечень страниц
 
 - [Логин](https://serene-heliotrope-d9a2a9.netlify.app)
-- [Регистрация](https://serene-heliotrope-d9a2a9.netlify.app/src/html/signin)
-- [Окно чата](https://serene-heliotrope-d9a2a9.netlify.app/src/html/chat)
-- [Профиль пользователя](https://serene-heliotrope-d9a2a9.netlify.app/src/html/profile)
-- [Редактирование профиля](https://serene-heliotrope-d9a2a9.netlify.app/src/html/edit-profile)
-- [Редактирование пароля](https://serene-heliotrope-d9a2a9.netlify.app/src/html/edit-password)
-- [Ошибка 500](https://serene-heliotrope-d9a2a9.netlify.app/src/html/500)
-- [Ошибка 404](https://serene-heliotrope-d9a2a9.netlify.app/src/html/404)
+- [Регистрация](https://serene-heliotrope-d9a2a9.netlify.app/src/html/signin/index.html)
+- [Окно чата](https://serene-heliotrope-d9a2a9.netlify.app/src/html/chat/index.html)
+- [Профиль пользователя](https://serene-heliotrope-d9a2a9.netlify.app/src/html/profile/index.html)
+- [Редактирование профиля](https://serene-heliotrope-d9a2a9.netlify.app/src/html/edit-profile/index.html)
+- [Редактирование пароля](https://serene-heliotrope-d9a2a9.netlify.app/src/html/edit-password/index.html)
+- [Ошибка 500](https://serene-heliotrope-d9a2a9.netlify.app/src/html/500/index.html)
+- [Ошибка 404](https://serene-heliotrope-d9a2a9.netlify.app/src/html/404/index.html)
