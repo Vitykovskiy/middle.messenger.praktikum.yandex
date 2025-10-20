@@ -1,6 +1,7 @@
+import type { IBlockProps } from '@/modules/block/types';
 import type { IUser } from '../authApi/types';
 
-export interface IChat {
+export interface IChat extends IBlockProps {
   id: number;
   title: string | null;
   avatar: string | null;
@@ -32,7 +33,7 @@ export interface ICreateChatResponse {
 }
 
 export interface IDeleteArchiveChatPayload {
-  chatId: string;
+  chatId: number;
 }
 
 export interface IDeleteChatResponse {

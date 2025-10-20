@@ -36,11 +36,10 @@ export class ChatCreateModal extends Form {
   public async onSubmit(form: HTMLFormElement): Promise<void> {
     const formData = new FormData(form);
     const title = formData.get('chat-name') as string | null;
+    modal.close();
 
     if (title) {
       await chatService.createChat(title);
     }
-
-    modal.close();
   }
 }

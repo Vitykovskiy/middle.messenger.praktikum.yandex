@@ -7,7 +7,10 @@ import { formatMessageTime } from '@/utils/dateTime';
 import userService from '@/services/user';
 import { router } from '@/modules/router';
 import { RoutesNames } from '@/routes';
+import { resolveConditionalProps } from '@/modules/block/helpers';
+import { activeChatId } from '@/services/chats/decorator';
 
+@activeChatId
 export class ChatPreview extends Block {
   private _id: number;
 
@@ -21,6 +24,14 @@ export class ChatPreview extends Block {
 
   public render(): DocumentFragment {
     const { options } = this.props as IChatPreviewProps;
+    const wrapperProps = {
+      classes: resolveConditionalProps([
+        ['chat-preview'],
+        ['chat-preview_active', this._id === this.props.activeChat]
+      ])
+    };
+
+    this.props.wrapperProps = wrapperProps;
 
     const props = this._resoleveOptions(options);
 
@@ -39,6 +50,14 @@ export class ChatPreview extends Block {
     const dateTime = time ? formatMessageTime(time) : '';
     const avatar = new Avatar({ size: 46, src });
 
-    return { options, title, avatar, isOwnerLastMessage, unreadCount, dateTime, content };
+    return {
+      options,
+      title,
+      avatar,
+      isOwnerLastMessage,
+      unreadCount,
+      dateTime,
+      content
+    };
   }
 }

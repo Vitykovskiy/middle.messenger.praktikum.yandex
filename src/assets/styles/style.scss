@@ -523,6 +523,20 @@ h2 {
   }
 }
 
+.confirm-dialog {
+  width: 430px !important;
+  height: 240px !important;
+
+  &__header {
+    @include header-2;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: space-around;
+  }
+}
+
 /* UI */
 
 .avatar {

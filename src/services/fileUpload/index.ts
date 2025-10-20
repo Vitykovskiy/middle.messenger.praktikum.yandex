@@ -69,8 +69,8 @@ export class FileUploadModal {
       try {
         const data = new FormData();
         data.append(fileKey, this._file);
-        await loadCallback(data);
         modal.close();
+        await loadCallback(data);
       } catch (error) {
         this._setError(String(error));
       }

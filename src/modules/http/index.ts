@@ -4,7 +4,6 @@ import {
   type HTTPResponse,
   type HTTPTransportConfig,
   type Options,
-  type OptionsWithoutMethod,
   type RequestBody
 } from './types';
 import { parseResponse } from './helpers';
@@ -25,23 +24,23 @@ export class HTTPTransport {
     return path ? this._baseUrl + '/resources' + path : null;
   }
 
-  public get: HTTPMethod = (url: string, options: OptionsWithoutMethod = {}) => {
+  public get: HTTPMethod = (url, options = {}) => {
     return this.requesthWithRetry(url, { ...options, method: METHODS.GET });
   };
 
-  public post: HTTPMethod = (url: string, options: OptionsWithoutMethod = {}) => {
+  public post: HTTPMethod = (url, options = {}) => {
     return this.requesthWithRetry(url, { ...options, method: METHODS.POST });
   };
 
-  public put: HTTPMethod = (url: string, options: OptionsWithoutMethod = {}) => {
+  public put: HTTPMethod = (url, options = {}) => {
     return this.requesthWithRetry(url, { ...options, method: METHODS.PUT });
   };
 
-  public delete: HTTPMethod = (url: string, options: OptionsWithoutMethod = {}) => {
+  public delete: HTTPMethod = (url, options = {}) => {
     return this.requesthWithRetry(url, { ...options, method: METHODS.DELETE });
   };
 
-  public request: HTTPMethod = (url: string, options: Options = {}) => {
+  public request: HTTPMethod = (url, options = {}) => {
     const { headers = {}, method, data, timeout = 5000, contentType } = options;
     const isJsonRequest = contentType === ContentTypes.JSON;
 

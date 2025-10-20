@@ -16,6 +16,7 @@ import {
   ChatSocketResponseTypes,
   type ChatSocketResponse,
   type GetUnreadMessagesReq,
+  type IChat,
   type IChatUser,
   type MessageRes,
   type MessagesReq
@@ -25,12 +26,14 @@ import modal from '@/services/modal';
 import { ChatCreateModal } from '@/components/chat/chatCreateModal';
 import { isNumber } from '@/utils/helpers';
 
-async function getChats(): Promise<void> {
+async function getChats(): Promise<IChat[]> {
   try {
     const list = await chatsApi.getChats();
     store.set(CHATS_LIST_STORE_KEY, list);
+    return list;
   } catch (error) {
     console.error('>> getChatsList', error);
+    return [];
   }
 }
 
@@ -42,6 +45,28 @@ async function createChat(title: string): Promise<void> {
   } catch (error) {
     console.error('>> createChat', error);
   }
+}
+
+async function editAvatar(form: FormData): Promise<void> {
+  const chatId = store.get(ACTIVE_CHAT_ID_STORE_KEY);
+  if (!isNumber(chatId)) return;
+
+  try {
+    form.append('chatId', String(chatId));
+    await chatsApi.uploadChatAvatar(form);
+    await getChats();
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function onDeleteActiveChat(): Promise<void> {
+  const chatId = store.get(ACTIVE_CHAT_ID_STORE_KEY);
+  if (!isNumber(chatId)) return;
+
+  await _deleteChat(chatId);
+  const list = await getChats();
+  router.go({ name: RoutesNames.MessengerPage, params: { id: list[0].id } });
 }
 
 async function searchChats(_title: string): Promise<void> {}
@@ -242,9 +267,19 @@ async function _getChatUsers(chatId: number): Promise<void> {
   }
 }
 
+async function _deleteChat(chatId: number): Promise<void> {
+  try {
+    await chatsApi.deleteChat({ chatId });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 export default {
   getChats,
   createChat,
+  editAvatar,
+  onDeleteActiveChat,
   searchChats,
   activateChat,
   deleteUsersFromChat,

@@ -1,5 +1,5 @@
 import '@/assets/styles/style.scss';
-import { MessengerWindow } from '@/components/chat/chat';
+import { ChatWindow } from '@/components/chat/chat';
 import { ChatSidebar } from '@/components/chat/chatSidebar';
 import ChatLayout from '@/components/layouts/chatLayout';
 import { router } from '@/modules/router';
@@ -10,7 +10,7 @@ import { Button } from '@/ui';
 export class MessengerPage extends ChatLayout {
   constructor() {
     const sidebarBody = new ChatSidebar();
-    const chat = new MessengerWindow();
+    const chat = new ChatWindow();
     const sidebarHeader = new Button({
       label: 'Профиль',
       variant: 'text',
