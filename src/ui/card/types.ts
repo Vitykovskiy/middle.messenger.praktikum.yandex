@@ -2,9 +2,8 @@ import type Block from '@/modules/block';
 import type { IBlockProps } from '@/modules/block/types';
 
 export interface ICardProps extends IBlockProps {
-  title?: string;
-  titleSlot?: Block | Block[];
-  content?: string;
-  contentSlot?: Block | Block[];
-  actions?: Block | Block[];
+  header?: string | Block | Block[] | null;
+  content?: string | Block | Block[] | null;
+  actions?: Block | Block[] | null;
+  isCloseBtn?: boolean;
 }

@@ -1,19 +1,19 @@
 import type Block from '.';
 
-export interface IBlockProps extends Record<string, unknown> {
-  events?: Record<string, (event: Event) => void>;
-  key?: string;
-}
-
 export type IBlockChildren = Record<string, Block | Block[]>;
 
-export interface IBlockWrapperProps extends Record<string, unknown> {
-  classes?: string[];
-  styles?: string[];
+export interface IBlockProps extends Record<string, Block | Block[] | unknown> {
+  tagName?: keyof HTMLElementTagNameMap;
+  events?: Record<string, (event: Event) => void>;
+  key?: string;
+  wrapperProps?: IBlockWrapperProps;
 }
 
 export interface IBlockMeta {
   tagName: keyof HTMLElementTagNameMap;
-  props: IBlockProps;
-  options: IBlockWrapperProps;
+}
+
+export interface IBlockWrapperProps extends Record<string, unknown> {
+  classes?: string[];
+  styles?: string[];
 }

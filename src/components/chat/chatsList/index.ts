@@ -1,30 +1,29 @@
 import Block from '@/modules/block';
-import { ChatsListSearch } from '@/components/chat/chatsListSearch';
-import { getChats } from '@/services/chats';
 import { template } from './template';
-import { ChatPreview } from '../chatPreview';
-import { Avatar } from '@/components/avatar';
+import { chatsList } from '@/services/chats/decorator';
+import { ChatPreview } from './chatPreview';
+import { UIText } from '@/ui';
+import type { IChat } from '@/api/chatsApi/types';
 
-const PROFILE_PIC_SIZE = 46;
-
+@chatsList
 export class ChatsList extends Block {
   constructor() {
-    const search = new ChatsListSearch();
-    const chats = getChats().map(({ dateTime, lastMessage, username, unreadedMessagesCount }) => {
-      const avatar = new Avatar({ size: PROFILE_PIC_SIZE });
-      return new ChatPreview({
-        avatar,
-        dateTime,
-        username,
-        unreadedMessagesCount,
-        lastMessage
-      });
-    });
-
-    super('div', { search, chats });
+    super({ wrapperProps: { classes: ['chats-list__list'] } });
   }
 
   public render(): DocumentFragment {
-    return this.compile(template, this.props);
+    const { chats } = this.props;
+
+    let content: Block | Block[] = new UIText({
+      tagName: 'div',
+      value: 'Пока чатов нет...',
+      wrapperProps: { classes: ['chats-list__empty-message'] }
+    });
+
+    if (chats && Array.isArray(chats) && chats.length) {
+      content = chats.map((chat: IChat) => new ChatPreview(chat));
+    }
+
+    return this.compile(template, { ...this.props, content });
   }
 }

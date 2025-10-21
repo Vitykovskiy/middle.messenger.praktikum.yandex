@@ -1,8 +1,13 @@
+import '@mdi/font/css/materialdesignicons.min.css';
 import '@/assets/styles/style.scss';
 import { render } from '@/utils/renderDom';
 import AppLayout from '@/components/layouts/appLayout';
-import { LoginPage } from '@/pages/loginPage';
+import { routes } from './routes';
+import { router } from '@/modules/router';
 
-const layout = new AppLayout({ content: new LoginPage() });
+const appLayout = new AppLayout();
 
-render('#app', layout);
+render('#app', appLayout);
+
+router.registerRoutes(routes);
+router.start();

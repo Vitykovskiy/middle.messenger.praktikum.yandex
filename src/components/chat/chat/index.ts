@@ -3,23 +3,54 @@ import { template } from './template';
 import { ChatHeader } from '../chatHeader';
 import { ChatFooter } from '../chatFooter';
 import { DialogWindow } from '../dialogWindow';
-import { getDialog } from '@/services/dialog';
-import { Avatar } from '@/components/avatar';
+import { activeChatId } from '@/services/chats/decorator';
+import { Router, router } from '@/modules/router';
+import { isNumber } from '@/utils/helpers';
+import chats from '@/services/chats';
+import { UIElement } from '@/ui/element';
 
-export class Chat extends Block {
+@activeChatId
+export class ChatWindow extends Block {
+  private _header = new ChatHeader();
+  private _dialog = new DialogWindow();
+  private _footer = new ChatFooter();
+  private _emptyMessage = new UIElement({
+    content: ' Выберите чат чтобы отправить сообщение',
+    wrapperProps: { classes: ['empty-message'] }
+  });
+
   constructor() {
-    const { interlocutor, messages } = getDialog();
-    const header = new ChatHeader({
-      avatar: new Avatar({ size: 34 }),
-      name: interlocutor.name
+    super({
+      wrapperProps: { classes: ['chat'] }
     });
-    const dialog = new DialogWindow(messages);
-    const footer = new ChatFooter();
-
-    super('div', { header, dialog, footer }, { classes: [dialog ? 'chat' : 'empty-message'] });
   }
 
   public render(): DocumentFragment {
-    return this.compile(template, this.props);
+    const { activeChat } = this.props;
+    return this.compile(template, {
+      dialog: this._dialog,
+      header: this._header,
+      footer: this._footer,
+      emptyMessage: this._emptyMessage,
+      showDialog: activeChat
+    });
+  }
+
+  public onMount(): void {
+    router.eventBus.on(Router.EVENTS.ROUTE_CHANGE, () => {
+      this._activateDialog();
+    });
+
+    this._activateDialog();
+  }
+
+  private async _activateDialog(): Promise<void> {
+    const id = Number(router.parameters?.id);
+
+    if (!isNumber(id)) {
+      return;
+    }
+
+    await chats.activateChat(id);
   }
 }

@@ -1,16 +1,23 @@
 import Block from '@/modules/block';
 import { template } from './template';
-import type { TDialogMessageProps } from './types';
+import { merge } from '@/utils/helpers';
+import { resolveConditionalProps } from '@/modules/block/helpers';
+import type { IBlockProps } from '@/modules/block/types';
 
 export class DialogMessage extends Block {
-  constructor(props: TDialogMessageProps) {
-    const classes = ['message'];
+  constructor(props: IBlockProps) {
+    const { isOutgoing, ...rest } = props;
 
-    if (props.isOutgoing) {
-      classes.push('message_outgoing');
-    }
-
-    super('div', props, { classes });
+    super(
+      merge(
+        {
+          wrapperProps: {
+            classes: resolveConditionalProps([['message'], ['message_outgoing', !!isOutgoing]])
+          }
+        },
+        rest
+      )
+    );
   }
 
   public render(): DocumentFragment {

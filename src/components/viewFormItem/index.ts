@@ -1,11 +1,11 @@
 import Block from '@/modules/block';
-import type { IViewFormItemProps } from './types';
-import type { IBlockWrapperProps } from '@/modules/block/types';
 import { template } from './template';
+import { merge } from '@/utils/helpers';
+import type { IViewFormItemProps } from './types';
 
 export class ViewFormItem extends Block {
-  constructor(props: IViewFormItemProps, options: IBlockWrapperProps = { classes: ['view-form'] }) {
-    super('div', props, options);
+  constructor(props: IViewFormItemProps) {
+    super(merge({ wrapperProps: { classes: ['view-form'] } }, props));
   }
 
   public render(): DocumentFragment {

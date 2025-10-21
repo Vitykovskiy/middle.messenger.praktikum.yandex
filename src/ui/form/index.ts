@@ -1,22 +1,21 @@
 import Block from '@/modules/block';
 import { template } from './template';
 import type { IFormProps } from './types';
-import type { IBlockChildren, IBlockWrapperProps } from '@/modules/block/types';
+import type { IBlockChildren } from '@/modules/block/types';
 import Input from '@/ui/input';
 import { BaseInput } from '../input/baseInput';
+import { isFormElement } from './helpers';
+import { merge } from '@/utils/helpers';
 
 export default class Form extends Block {
-  constructor(props: IFormProps, options: IBlockWrapperProps = {}) {
-    super('form', props, options);
+  constructor(props: IFormProps) {
+    const { events = {}, ...rest } = props;
 
-    const { events = {} } = props;
+    super(merge({ tagName: 'form' }, rest));
 
-    const mergedEvents = {
-      ...events,
-      submit: events.submit ?? this._defaultSubmit
-    };
+    merge(events, { submit: this._onSubmit });
 
-    this.setProps({ events: mergedEvents });
+    this.setProps({ events });
   }
 
   public render(): DocumentFragment {
@@ -41,16 +40,20 @@ export default class Form extends Block {
     return values;
   }
 
-  // Стрелочная функция, чтобы не терялся контекст при submit
-  private _defaultSubmit = (event: Event): void => {
+  public onSubmit(_form: HTMLFormElement): void {}
+
+  private _onSubmit = (event: Event): void => {
     event.preventDefault();
 
     if (!this.validate()) {
       return;
     }
 
-    const values = this.getValues();
-    console.log('Form values:', values);
+    if (!isFormElement(event.target)) {
+      return;
+    }
+
+    this.onSubmit(event.target);
   };
 
   private _getAllNestedInputs(): (Input | BaseInput)[] {

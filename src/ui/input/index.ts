@@ -2,30 +2,22 @@ import Block from '@/modules/block';
 import Divider from '@/ui/divider';
 import { template } from './template';
 import { BaseInput } from './baseInput';
-import type { IBlockWrapperProps } from '@/modules/block/types';
 import type { IInputProps } from './types';
 import EventBus from '@/modules/event-bus';
+import { isEqual, merge } from '@/utils/helpers';
+import { isHTMLInput } from '@/modules/block/helpers';
 
 export default class Input extends Block {
-  private _validator?: (value: string) => string | null;
+  private _validators?: ((value: string) => string | null)[];
 
-  constructor(props: IInputProps, options: IBlockWrapperProps = {}) {
-    const { value, type, name, placeholder = '', validator, ...rest } = props;
+  constructor(props: IInputProps) {
+    const { value, type, name, placeholder = '', validators, ...rest } = props;
 
     const parentEventBus = new EventBus();
-
-    // подписка на blur
-    if (validator) {
-      parentEventBus.on('blur', (event: Event) => {
-        if (event.target instanceof HTMLInputElement) {
-          const newValue = event.target.value;
-          const error = validator(newValue);
-          this.setProps({ value: newValue, error });
-        }
-      });
-    }
-
-    const divider = new Divider({ color: 'primary' }, { styles: ['margin-top: 7px'] });
+    const divider = new Divider({
+      color: 'primary',
+      wrapperProps: { styles: ['margin-top: 7px'] }
+    });
 
     const input = new BaseInput({
       value,
@@ -35,41 +27,89 @@ export default class Input extends Block {
       parentEventBus
     });
 
-    const classes = ['ui-input', ...(options.classes ?? [])];
-    const styles = [...(options.styles ?? [])];
+    super(merge({ input, divider, wrapperProps: { classes: [['ui-input']] } }, rest));
 
-    super(
-      'div',
-      {
-        ...rest,
-        input,
-        divider
-      },
-      { classes, styles }
-    );
-
-    this._validator = validator;
+    this._validators = validators;
+    this._initValidators(parentEventBus);
+    input.onChange = (v) => this.onChange(v);
+    input.onInput = (v) => this.onInput(v);
   }
 
   public validate(): boolean {
-    if (!this._validator) {
+    if (!this._validators) {
       return true;
     }
 
     const techInput = this.element.querySelector('input');
 
-    if (!techInput || !(techInput instanceof HTMLInputElement)) {
-      throw new Error(`Поле ввода ${this.props.name} не найдено`);
+    if (!isHTMLInput(techInput)) {
+      throw new Error(`Input field ${this.props.name} not found`);
     }
 
     const value = techInput.value;
-    const error = this._validator(value);
 
-    this.setProps({ error });
-    return !error;
+    for (const validator of this._validators) {
+      const error = validator(value);
+      if (error) {
+        this.setProps({ error });
+        return false;
+      }
+    }
+
+    return true;
   }
 
   public render(): DocumentFragment {
     return this.compile(template, this.props);
+  }
+
+  public onUpdate(oldProps: IInputProps, newProps: IInputProps): boolean {
+    if (isEqual(oldProps.value, newProps.value)) return true;
+
+    const input = this.children.input;
+    if (!BaseInput.isBaseInput(input)) {
+      throw new Error('BaseInput not found');
+    }
+
+    const htmlInputElement = input.getContent();
+    if (!isHTMLInput(htmlInputElement)) {
+      throw new Error('The BaseInput does not contain an HtmlInputElement');
+    }
+
+    htmlInputElement.value = newProps.value ?? '';
+    return true;
+  }
+
+  public onChange(_value: string | null): void {}
+
+  public onInput(_value: string | null): void {}
+
+  private _initValidators(eventBus: EventBus): void {
+    if (!this._validators || !this._validators.length) {
+      return;
+    }
+
+    eventBus.on('blur', (event: Event) => {
+      if (isHTMLInput(event.target)) {
+        const value = event.target.value;
+        const error = this._getInputError(value);
+        this.setProps({ value, error });
+      }
+    });
+  }
+
+  private _getInputError(inputValue: string): string | null {
+    if (!this._validators) {
+      return null;
+    }
+
+    for (const validator of this._validators) {
+      const error = validator(inputValue);
+      if (error) {
+        return error;
+      }
+    }
+
+    return null;
   }
 }
