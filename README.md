@@ -8,6 +8,8 @@
 - `npm run start` — сборка и запуск проекта
 - `npm run lint` — проверка TypeScript, ESLint и Stylelint + автофикс
 - `npm run format` — автоформатирование всего кода через Prettier
+- `npm run test` — запуск тестов (Mocha + Chai + Sinon)
+- `npm run prepare` — инициализация Husky для git-хуков
 
 После запуска проект будет доступен на порту 3000.
 

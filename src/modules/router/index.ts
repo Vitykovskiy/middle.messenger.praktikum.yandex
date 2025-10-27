@@ -1,8 +1,9 @@
 import Route from '@/modules/route';
 import EventBus from '@/modules/event-bus';
 import type Block from '@/modules/block';
-import type { MetaData, RouteGuard } from '@/modules/route/types';
-import type { IRouteRaw, IRouterNavigationByName, IRouterNavigationByPath } from './types';
+import type { RouteConfig } from '@/modules/route/types';
+import type { RouteRecord, RouterNavigationByName, RouterNavigationByPath } from './types';
+import { queryStringify } from '@/utils/helpers';
 
 export class Router {
   public history!: History;
@@ -16,6 +17,7 @@ export class Router {
     ROUTE_CHANGE: 'route:change'
   };
   private _eventBus!: EventBus;
+  private _query: Record<string, string> = {};
 
   constructor(rootQuery: string = '#routerView') {
     if (Router.__instance) {
@@ -36,20 +38,16 @@ export class Router {
     return this._eventBus;
   }
 
-  public get meta() {
-    if (!this._currentRoute) {
-      return null;
-    }
-
-    return this._currentRoute.meta;
+  public get meta(): Record<string, unknown> {
+    return this._currentRoute?.meta ?? {};
   }
 
-  public get parameters() {
-    if (!this._currentRoute) {
-      return null;
-    }
+  public get parameters(): Record<string, string> | null {
+    return this._currentRoute?.parameters ?? null;
+  }
 
-    return this._currentRoute.parameters;
+  public get query(): Record<string, string> {
+    return this._query;
   }
 
   public get currentPath(): string {
@@ -65,11 +63,11 @@ export class Router {
     this._onRoute(window.location.pathname);
   }
 
-  public go(navigation: IRouterNavigationByName): void;
+  public go(navigation: RouterNavigationByName): void;
+  public go(navigation: RouterNavigationByPath): void;
 
-  public go(navigation: IRouterNavigationByPath): void;
-
-  public go(navigation: IRouterNavigationByName | IRouterNavigationByPath): void {
+  public go(navigation: RouterNavigationByName | RouterNavigationByPath): void {
+    const queryPath = navigation.query ? '?' + queryStringify(navigation.query) : '';
     let pathname = '';
 
     if ('name' in navigation) {
@@ -89,6 +87,7 @@ export class Router {
     } else {
       pathname = navigation.path;
     }
+    pathname = pathname + queryPath;
 
     this.history.pushState({}, '', pathname);
     this._onRoute(pathname);
@@ -103,18 +102,23 @@ export class Router {
     this.history.forward();
   }
 
-  public getRoute(pathname: string): Route | null {
+  public getRoute(path: string): Route | null {
     // Если путь не найден - возвращает последний (дефолтный) роут
+    const [pathName, query = ''] = path.split('?');
+
+    this._clearQuery();
+    this._setQuery(query);
+
     return (
-      this.routes.find((route) => route.match(pathname)) ??
+      this.routes.find((route) => route.match(pathName)) ??
       this.routes[this.routes.length - 1] ??
       null
     );
   }
 
-  public registerRoutes(routes: IRouteRaw[]): void {
-    routes.forEach(({ path, name, component, children, meta, parameters, guard }) => {
-      this._use(path, name, component, parameters, meta, guard);
+  public registerRoutes(routes: RouteRecord[]): void {
+    routes.forEach(({ path, name, component, children, meta, paramKeys, guard }) => {
+      this._use({ path, name, view: component, paramKeys, meta, guard });
 
       if (children) {
         this.registerRoutes(
@@ -145,33 +149,33 @@ export class Router {
 
     this._currentRoute = route;
 
-    if (!route) {
-      return;
-    }
-
     this._eventBus.emit(Router.EVENTS.ROUTE_CHANGE);
-    route.render();
+    route.render(this._rootQuery);
   }
   // Регистрация роутов
 
-  private _use(
-    pathname: string,
-    name: string,
-    block: typeof Block,
-    parameters?: string[],
-    meta?: MetaData,
-    _use?: RouteGuard
-  ): void {
-    const route = new Route(
-      pathname,
-      block,
-      { rootQuery: this._rootQuery, name },
-      parameters,
+  private _use<T extends typeof Block>(params: RouteConfig<T>): void {
+    const { path, name, meta, view, paramKeys, guard } = params;
+    const route = new Route({
+      path,
+      name,
+      view,
+      paramKeys,
       meta,
-      _use
-    );
-    this._pathsMap.set(name, route);
+      guard
+    });
+
+    if (name) this._pathsMap.set(name, route);
     this.routes.push(route);
+  }
+
+  private _clearQuery(): void {
+    this._query = {};
+  }
+
+  private _setQuery(query: string): void {
+    const queryParams = new URLSearchParams(query);
+    for (const [key, value] of queryParams.entries()) this._query[key] = value;
   }
 }
 

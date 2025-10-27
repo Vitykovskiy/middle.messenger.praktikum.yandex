@@ -1,8 +1,12 @@
-export type MetaData = Record<string, unknown>; // Кастомные свойства роута
+export type RouteMeta = Record<string, unknown>; // Произвольные метаданные роута
 
-export type RouteProps = {
-  rootQuery: string;
+export type RouteGuard = () => Promise<boolean> | boolean;
+
+export interface RouteConfig<T> {
+  view: T;
+  path: string;
   name?: string;
-};
-
-export type RouteGuard = () => Promise<boolean>;
+  paramKeys?: string[];
+  meta?: RouteMeta;
+  guard?: RouteGuard;
+}

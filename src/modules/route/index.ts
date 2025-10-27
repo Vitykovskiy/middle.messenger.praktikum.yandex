@@ -1,32 +1,25 @@
 import type Block from '@/modules/block';
 import { isEqual } from '@/utils/helpers';
-import type { RouteProps, MetaData, RouteGuard } from './types';
+import type { RouteConfig, RouteGuard, RouteMeta } from './types';
 import { render } from '@/utils/renderDom';
 
 export default class Route<T extends typeof Block = typeof Block, C extends Block = Block> {
   private _basePath: string;
   private _name: string | null = null;
   private _blockClass: T;
-  private _props: RouteProps;
   private _block: C | null = null;
   private _parametersKeys: string[];
   private _parameters: Record<string, string> = {};
-  private _meta: MetaData;
+  private _meta: RouteMeta | undefined;
   private _guard: RouteGuard | undefined;
 
-  constructor(
-    pathname: string,
-    view: T,
-    props: RouteProps,
-    parametersKeys: string[] = [],
-    meta: MetaData = {},
-    guard?: RouteGuard
-  ) {
-    this._basePath = pathname;
-    this._name = props.name ?? null;
+  constructor(params: RouteConfig<T>) {
+    const { view, path, meta, name = null, paramKeys = [], guard } = params;
+
+    this._basePath = path;
+    this._name = name;
     this._blockClass = view;
-    this._props = props;
-    this._parametersKeys = parametersKeys;
+    this._parametersKeys = paramKeys;
     this._meta = meta;
     this._guard = guard;
   }
@@ -35,11 +28,10 @@ export default class Route<T extends typeof Block = typeof Block, C extends Bloc
     if (!this._guard) {
       return true;
     }
-    const access = await this._guard();
-    return access;
+    return await this._guard();
   }
 
-  public get meta(): MetaData {
+  public get meta(): RouteMeta | undefined {
     return this._meta;
   }
 
@@ -55,14 +47,13 @@ export default class Route<T extends typeof Block = typeof Block, C extends Bloc
     return this._name;
   }
 
-  public get parameters(): Record<string, string> | null {
+  public get parameters(): Record<string, string> {
     return this._parameters;
   }
 
   public navigate(pathname: string) {
     if (this.match(pathname)) {
       this._basePath = pathname;
-      this.render();
     }
   }
 
@@ -94,11 +85,11 @@ export default class Route<T extends typeof Block = typeof Block, C extends Bloc
     return false;
   }
 
-  public render(): void {
+  public render(rootQuery: string): void {
     if (!this._block) {
       // @ts-expect-error TS2511: Cannot create an instance of an abstract class
       this._block = new this._blockClass() as C;
-      render(this._props.rootQuery, this._block);
+      render(rootQuery, this._block);
       return;
     }
   }
@@ -112,6 +103,7 @@ export default class Route<T extends typeof Block = typeof Block, C extends Bloc
   private _setParameters(pathname: string): void {
     const splittedRoutePath = this._basePath.split('/');
     const splittedPath = pathname.split('/');
+    this._parameters = {};
     this._parametersKeys.forEach((paramKey, idx) => {
       const value = splittedPath[splittedRoutePath.length + idx];
       if (value) {

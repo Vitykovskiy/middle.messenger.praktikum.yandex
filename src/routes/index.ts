@@ -6,7 +6,7 @@ import { ProfilePage } from '@/pages/profilePage';
 import { ProfileEditPage } from '@/pages/profileEditPage';
 import { ProfilePasswordPage } from '@/pages/profilePasswordPage';
 import { MessengerPage } from '@/pages/messengerPage';
-import type { IRouteRaw } from '@/modules/router/types';
+import type { RouteRecord } from '@/modules/router/types';
 import { store } from '@/modules/store';
 import { USER_STORE_KEY } from '@/services/user/constants';
 import user from '@/services/user';
@@ -23,7 +23,7 @@ export const enum RoutesNames {
   NotFound = 'NotFound'
 }
 
-export const routes: IRouteRaw[] = [
+export const routes: RouteRecord[] = [
   {
     name: RoutesNames.SigninPage,
     path: '/',
@@ -37,7 +37,7 @@ export const routes: IRouteRaw[] = [
   {
     name: RoutesNames.MessengerPage,
     path: '/messenger',
-    parameters: ['id'],
+    paramKeys: ['id'],
     component: MessengerPage,
     guard: authGuard
   },
@@ -90,7 +90,6 @@ async function authGuard(): Promise<boolean> {
   } catch (error) {
     console.error('>> initUser', error);
     router.go({ name: RoutesNames.SigninPage });
-
     return false;
   }
 }

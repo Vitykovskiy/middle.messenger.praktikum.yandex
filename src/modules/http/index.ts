@@ -25,19 +25,19 @@ export class HTTPTransport {
   }
 
   public get: HTTPMethod = (url, options = {}) => {
-    return this.requesthWithRetry(url, { ...options, method: METHODS.GET });
+    return this.requestWithRetry(url, { ...options, method: METHODS.GET });
   };
 
   public post: HTTPMethod = (url, options = {}) => {
-    return this.requesthWithRetry(url, { ...options, method: METHODS.POST });
+    return this.requestWithRetry(url, { ...options, method: METHODS.POST });
   };
 
   public put: HTTPMethod = (url, options = {}) => {
-    return this.requesthWithRetry(url, { ...options, method: METHODS.PUT });
+    return this.requestWithRetry(url, { ...options, method: METHODS.PUT });
   };
 
   public delete: HTTPMethod = (url, options = {}) => {
-    return this.requesthWithRetry(url, { ...options, method: METHODS.DELETE });
+    return this.requestWithRetry(url, { ...options, method: METHODS.DELETE });
   };
 
   public request: HTTPMethod = (url, options = {}) => {
@@ -53,7 +53,12 @@ export class HTTPTransport {
       const xhr = new XMLHttpRequest();
       const isGet = method === METHODS.GET;
 
-      xhr.open(method, isGet && !!data ? `${url}${queryStringify({ ...data })}` : url);
+      xhr.open(
+        method,
+        isGet && !!data
+          ? `${this._baseUrl + url}?${queryStringify({ ...data })}`
+          : this._baseUrl + url
+      );
       xhr.withCredentials = options.withCredentials ?? this._withCredentials;
       xhr.timeout = timeout;
 
@@ -94,10 +99,8 @@ export class HTTPTransport {
     });
   };
 
-  public async requesthWithRetry<R>(url: string, options: Options = {}): Promise<HTTPResponse<R>> {
+  public async requestWithRetry<R>(url: string, options: Options = {}): Promise<HTTPResponse<R>> {
     const { retries = 1 } = options;
-
-    const uri = this._baseUrl + url;
 
     const onError = (error: R): Promise<HTTPResponse<R>> => {
       const retriesLeft = retries - 1;
@@ -105,9 +108,9 @@ export class HTTPTransport {
         throw error;
       }
 
-      return this.requesthWithRetry<R>(uri, { ...options, retries: retriesLeft });
+      return this.requestWithRetry<R>(url, { ...options, retries: retriesLeft });
     };
 
-    return this.request<R>(uri, options).catch(onError);
+    return this.request<R>(url, options).catch(onError);
   }
 }
