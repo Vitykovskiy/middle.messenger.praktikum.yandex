@@ -13,8 +13,17 @@
     "start": "vite build && vite preview",
     "lint": "tsc --noEmit && npx eslint . --fix && npx stylelint \"**/*.scss\" --fix",
     "format": "npx prettier --write .",
+    "lint-staged": "lint-staged",
     "test": "mocha",
     "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js}": [
+      "eslint --fix"
+    ],
+    "*.{scss,css}": [
+      "stylelint --fix"
+    ]
   },
   "keywords": [],
   "author": "",
@@ -33,8 +42,10 @@
     "chai": "^6.2.0",
     "eslint": "^9.33.0",
     "eslint-config-prettier": "^10.1.8",
+    "handlebars": "^4.7.8",
     "husky": "^9.1.7",
     "jsdom": "^27.0.1",
+    "lint-staged": "^16.2.6",
     "mocha": "^11.7.4",
     "sass": "^1.89.2",
     "sinon": "^15.2.0",
@@ -43,7 +54,6 @@
     "tsx": "^4.20.6",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.39.1",
-    "vite": "^7.0.6",
-    "vite-plugin-handlebars": "^1.5.0"
+    "vite": "^7.0.6"
   }
 }
